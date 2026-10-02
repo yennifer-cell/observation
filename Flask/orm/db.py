@@ -5,7 +5,7 @@ from contextlib import contextmanager
 from dotenv import load_dotenv
 
 #argument for the .env file path
-load_dotenv()
+load_dotenv(override=True)
 
 class Database:
    def __init__(self):
