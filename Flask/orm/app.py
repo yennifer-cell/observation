@@ -22,6 +22,5 @@ def add_inventory():
                                 data["buying_price"],data["selling_price"])
     return jsonify({"message":"Item added successfully","item":new_item}),201
 
-#jdjfke
-if __name__=="__main__":
+if __name__ == "__main__":
     app.run(debug=True)
