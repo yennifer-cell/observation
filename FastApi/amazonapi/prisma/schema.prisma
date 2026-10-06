@@ -1,0 +1,92 @@
+generator client {
+  provider = "prisma-client-py"
+  enable_experimental_decimal = true
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model client_order {
+  identity               String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  member_id              String?                @db.Uuid
+  member_obj             Json                   @db.Json
+  client_order_status_id String                 @db.Uuid
+  total_selling_price    Decimal                @default(0) @db.Decimal
+  total_buying_price     Decimal                @default(0) @db.Decimal
+  total_profit           Decimal                @default(0) @db.Decimal
+  total_paid             Decimal                @default(0) @db.Decimal
+  created_at             DateTime?              @default(now()) @db.Timestamptz(6)
+  updated_at             DateTime?              @default(now()) @db.Timestamptz(6)
+  client_order_status    client_order_status    @relation(fields: [client_order_status_id], references: [identity], onDelete: Cascade, onUpdate: NoAction)
+  member                 member?                @relation(fields: [member_id], references: [identity], onUpdate: NoAction)
+  client_order_product   client_order_product[]
+}
+
+model client_order_product {
+  identity            String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  client_order_id     String       @db.Uuid
+  product_id          String       @db.Uuid
+  qty                 Int?
+  unit_selling_price  Decimal      @default(0) @db.Decimal
+  unit_buying_price   Decimal      @default(0) @db.Decimal
+  total_selling_price Decimal      @default(0) @db.Decimal
+  total_buying_price  Decimal      @default(0) @db.Decimal
+  created_at          DateTime?    @default(now()) @db.Timestamptz(6)
+  updated_at          DateTime?    @default(now()) @db.Timestamptz(6)
+  client_order        client_order @relation(fields: [client_order_id], references: [identity], onDelete: Cascade, onUpdate: NoAction)
+  product             product      @relation(fields: [product_id], references: [identity], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model client_order_status {
+  identity     String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name         String         @db.VarChar(250)
+  description  String?        @db.VarChar(250)
+  icon_name    String?        @db.VarChar(250)
+  badge_color  String?        @db.VarChar(250)
+  text_color   String?        @db.VarChar(250)
+  created_at   DateTime?      @default(now()) @db.Timestamptz(6)
+  updated_at   DateTime?      @default(now()) @db.Timestamptz(6)
+  client_order client_order[]
+}
+
+model member {
+  identity        String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name            String           @db.VarChar(250)
+  email           String           @unique @db.VarChar(250)
+  created_at      DateTime?        @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime?        @default(now()) @db.Timestamptz(6)
+  client_order    client_order[]
+  member_password member_password?
+}
+
+model member_password {
+  identity   String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  member_id  String    @unique @db.Uuid
+  password   String
+  created_at DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at DateTime? @default(now()) @db.Timestamptz(6)
+  member     member    @relation(fields: [member_id], references: [identity], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model product {
+  identity             String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  description          String?
+  selling_price        Decimal                @default(0) @db.Decimal
+  buying_price         Decimal                @default(0) @db.Decimal
+  qty                  Int                    @default(1)
+  created_at           DateTime?              @default(now()) @db.Timestamptz(6)
+  updated_at           DateTime?              @default(now()) @db.Timestamptz(6)
+  client_order_product client_order_product[]
+  product_image        product_image[]
+}
+
+model product_image {
+  identity   String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  product_id String    @db.Uuid
+  image      String    @db.VarChar(1000)
+  created_at DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at DateTime? @default(now()) @db.Timestamptz(6)
+  product    product   @relation(fields: [product_id], references: [identity], onDelete: Cascade, onUpdate: NoAction)
+}
