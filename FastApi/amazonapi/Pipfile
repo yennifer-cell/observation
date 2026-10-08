@@ -5,9 +5,12 @@ name = "pypi"
 
 [packages]
 prisma = "*"
+fastapi = "*"
 uvicorn = {extras = ["standard"], version = "*"}
+pydantic = {extras = ["email"], version = "*"}
+bcrypt = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "3.12"
+python_version ="3"
