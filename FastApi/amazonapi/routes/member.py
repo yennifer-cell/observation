@@ -1,10 +1,9 @@
 from fastapi import APIRouter, status, HTTPException
 from pydantic import BaseModel, EmailStr
 import bcrypt
+from db import Prisma
 
 router = APIRouter()
-
-from app import Prisma
 
 
 class MemberSchema(BaseModel):
@@ -59,7 +58,6 @@ async def sign_up(payload: MemberSchema):
             "email": member.email,
         },
     }
-
 
 
 @router.post("/login", status_code=status.HTTP_200_OK)

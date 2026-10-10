@@ -21,3 +21,7 @@ we decide what a member can do; 1. signup<create an account>
 
 -- for data validation use pydantic
 pipenv install pydantic 'pydantic[email]'
+
+--Other routes
+CRUD for product
+  create read update delete

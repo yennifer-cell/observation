@@ -9,6 +9,9 @@ fastapi = "*"
 uvicorn = {extras = ["standard"], version = "*"}
 pydantic = {extras = ["email"], version = "*"}
 bcrypt = "*"
+cloudinary = "*"
+python-dotenv = "*"
+python-multipart = "*"
 
 [dev-packages]
 
