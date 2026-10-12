@@ -2,6 +2,7 @@ from fastapi import APIRouter, status, HTTPException
 from pydantic import BaseModel, EmailStr
 import bcrypt
 from db import Prisma
+from auth import create_access_token
 
 router = APIRouter()
 
@@ -59,6 +60,7 @@ async def sign_up(payload: MemberSchema):
         },
     }
 
+# can ask you if your are a robot ans 2 step authentication, otp-- how we protect this
 
 @router.post("/login", status_code=status.HTTP_200_OK)
 async def login(payload: LoginSchema):
@@ -85,11 +87,17 @@ async def login(payload: LoginSchema):
             detail="Invalid email or password",
         )
 
+    encode = {"identity": member.identity}
+    token=create_access_token(encode)
+    
+
     return {
         "message": "Login successful",
         "member": {
             "identity": member.identity,
             "name": member.name,
             "email": member.email,
+            
         },
+        "token":token
     }

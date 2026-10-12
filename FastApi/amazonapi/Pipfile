@@ -12,6 +12,7 @@ bcrypt = "*"
 cloudinary = "*"
 python-dotenv = "*"
 python-multipart = "*"
+pyjwt = "*"
 
 [dev-packages]
 
