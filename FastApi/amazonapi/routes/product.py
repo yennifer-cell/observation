@@ -77,8 +77,7 @@ async def get_by_id(product_id: str):
         return product
     
 @router.get("/")
-async def get_all_products():
-    
+async def get_all():
         products = await Prisma.product.find_many()
    
         return products

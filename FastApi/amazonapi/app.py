@@ -1,12 +1,12 @@
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import FastAPI,Depends
 import socket
 import uvicorn
 from db import Prisma
 from routes.member import router as member_router
 from routes.product import router as product_router
 from routes.product_image import router as product_image_router
-
+from auth import get_current_member
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -18,8 +18,16 @@ app=FastAPI(title="AmazonApi", lifespan=lifespan)
 
 #register routers
 app.include_router(member_router, prefix="/member")
-app.include_router(product_router, prefix="/product")
-app.include_router(product_image_router, prefix="/product_image")
+app.include_router(
+    product_router,
+    prefix="/product",
+    dependencies=[Depends(get_current_member)],
+)
+app.include_router(
+    product_image_router,
+    prefix="/product_image",
+    dependencies=[Depends(get_current_member)],
+)
 
 @app.get("/")
 async def root():
