@@ -1,54 +1,63 @@
+
 from contextlib import asynccontextmanager
-from fastapi import FastAPI,Depends
-import socket
+from fastapi import FastAPI, Depends
 import uvicorn
-from db import Prisma
 from routes.member import router as member_router
 from routes.product import router as product_router
 from routes.product_image import router as product_image_router
+from routes.client_order_product import router as client_order_product_router
+from routes.client_order import router as client_order_router
+from db import prisma
 from auth import get_current_member
+from seed import seed_status
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await Prisma.connect()
+    await prisma.connect()
+    await seed_status()
     yield
-    await Prisma.disconnect()
-    
-app=FastAPI(title="AmazonApi", lifespan=lifespan)
+    await prisma.disconnect()
 
-#register routers
+
+app = FastAPI(title="Amazon api", lifespan=lifespan)
+
+# register router
 app.include_router(member_router, prefix="/member")
 app.include_router(
     product_router,
     prefix="/product",
-    dependencies=[Depends(get_current_member)],
+    dependencies=[Depends(get_current_member)]
 )
 app.include_router(
     product_image_router,
     prefix="/product_image",
-    dependencies=[Depends(get_current_member)],
+    dependencies=[Depends(get_current_member)]
 )
+app.include_router(
+    client_order_product_router,
+    prefix="/client_order_product",
+    dependencies=[Depends(get_current_member)]
+)
+app.include_router(
+    client_order_router,
+    prefix="/client_order",
+    dependencies=[Depends(get_current_member)]
+)
+
 
 @app.get("/")
 async def root():
-    member=await Prisma.member.find_many()
-    print(member)
-    return {"message":"API is running"}
+    members = await prisma.member.find_many()
+    print(members)
+    return {"message": "API is running"}
 
 
-def find_available_port(start: int = 8000, end: int = 8100) -> int:
-    for port in range(start, end + 1):
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
-            try:
-                server_socket.bind(("127.0.0.1", port))
-            except OSError:
-                continue
-            return port
-
-    raise RuntimeError(f"No available port found between {start} and {end}")
-
-
-if __name__=="__main__":
-    port = find_available_port()
-    print(f"Starting API at http://127.0.0.1:{port}")
-    uvicorn.run("app:app", host="127.0.0.1", port=port, reload=True)
+if __name__ == "__main__":
+    uvicorn.run(
+        "app:app",
+        host="127.0.0.1",
+        port=5000,
+        reload=True,
+        reload_excludes=["uploads/*"]
+    )

@@ -1,3 +1,4 @@
 from prisma import Prisma as PrismaClient
 
-Prisma = PrismaClient()
+prisma = PrismaClient()
+Prisma = prisma
