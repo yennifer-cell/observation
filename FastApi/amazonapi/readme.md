@@ -14,6 +14,9 @@ pipenv run prisma generate
 pipenv run python app.py
 --connect to your db
 
+-- for local frontend development, the API allows CORS requests from
+-- http://localhost:5173 and http://127.0.0.1:5173
+
 --next step
 --we start with the routes we begin with ; user member routes 
 we decide what a member can do; 1. signup<create an account>

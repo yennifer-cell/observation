@@ -1,6 +1,7 @@
 
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Depends
+from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 from routes.member import router as member_router
 from routes.product import router as product_router
@@ -21,6 +22,16 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="Amazon api", lifespan=lifespan)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+    ],
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
+    allow_headers=["Content-Type", "Authorization"],
+)
 
 # register router
 app.include_router(member_router, prefix="/member")
