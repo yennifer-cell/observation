@@ -6,3 +6,6 @@ Povider folder<prop drilling>
 Setup ou Hooks
 use axios
 screens<>
+
+npm install react-hot-toast -- install this for axios
+then run --npm run dev
